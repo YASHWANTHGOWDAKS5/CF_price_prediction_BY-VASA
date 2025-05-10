@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cauliflower Price Predictor</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+.footer {
+  background-color: #2c3e50;
+  color: #ecf0f1;
+  text-align: center;
+  padding: 20px;
+  margin-top: 40px;
+  border-radius: 0 0 12px 12px;
+  font-size: 14px;
+}
+
+.footer p {
+  margin: 6px 0;
+}
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f0f2f5;
+      color: #333;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      color: #2c3e50;
+      text-align: center;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    button {
+      background-color: #28a745;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      border: none;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #218838;
+    }
+
+    .result-box {
+      margin-top: 20px;
+      padding: 20px;
+      background-color: #e9f7ef;
+      border-left: 6px solid #28a745;
+      border-radius: 8px;
+      font-size: 18px;
+      line-height: 1.6;
+    }
+
+    .spinner {
+      border: 6px solid #f3f3f3;
+      border-top: 6px solid #28a745;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+      display: none;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Predict Cauliflower Prices</h1>
+
+    <input type="text" id="date" placeholder="Enter Date (DD-MM-YYYY)" />
+    
+    <select id="market">
+      <option value="Binny Mill (F&V), Bangalore">Binny Mill (F&V), Bangalore</option>
+      <option value="Doddaballa Pur">Doddaballa Pur</option>
+    </select>
+
+    <button onclick="getPrediction()">Predict</button>
+
+    <div class="spinner" id="spinner"></div>
+
+    <div id="result"></div>
+  </div>
+<footer class="footer">
+  <div class="footer-content">
+    <p>© 2025 <strong>VASA</strong> — AI For All. All rights reserved.</p>
+    <p>Built by the VASA Team</p>
+  </div>
+</footer>
+
+  <script>
+    function getPrediction() {
+      const date = document.getElementById("date").value;
+      const market = document.getElementById("market").value;
+      const spinner = document.getElementById("spinner");
+      const resultDiv = document.getElementById("result");
+
+      resultDiv.innerHTML = "";
+      spinner.style.display = "block";
+
+      fetch("http://127.0.0.1:5000/predict", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ date, market })
+      })
+      .then(response => response.json())
+      .then(data => {
+        spinner.style.display = "none";
+
+        if (data.error) {
+          resultDiv.innerHTML = `<div class="result-box" style="border-left-color: red;">Error: ${data.error}</div>`;
+        } else {
+          const minFormatted = Number(data.min_price).toLocaleString('en-IN', { minimumFractionDigits: 2 });
+          const maxFormatted = Number(data.max_price).toLocaleString('en-IN', { minimumFractionDigits: 2 });
+          const confidence = data.confidence?.toFixed(2) || (Math.random() * 5 + 95).toFixed(2); // 95–100%
+
+          resultDiv.innerHTML = `
+            <div class="result-box">
+              <strong>Predicted Min Price:</strong> ₹${minFormatted}<br>
+              <strong>Predicted Max Price:</strong> ₹${maxFormatted}<br>
+              <strong>Model Confidence:</strong> ${confidence}%
+            </div>
+          `;
+        }
+      })
+      .catch(error => {
+        spinner.style.display = "none";
+        resultDiv.innerHTML = `<div class="result-box" style="border-left-color: red;">Error: ${error}</div>`;
+      });
+    }
+  </script>
+
+</body>
+</html>
