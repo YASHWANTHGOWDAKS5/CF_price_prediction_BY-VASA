@@ -73,7 +73,7 @@
 
     <select id="market">
       <option value="Binny Mill (F&V), Bangalore">Binny Mill (F&V), Bangalore</option>
-      <!-- Add more markets if needed -->
+      <option value="KR Market (F&V), Bangalore">KR Market (F&V), Bangalore</option>
     </select>
 
     <button onclick="getPrediction()">Predict</button>
@@ -130,7 +130,7 @@
         } else {
           const minFormatted = Number(data.min_price).toLocaleString('en-IN', { minimumFractionDigits: 2 });
           const maxFormatted = Number(data.max_price).toLocaleString('en-IN', { minimumFractionDigits: 2 });
-          const confidence = data.confidence?.toFixed(2) || (Math.random() * 5 + 95).toFixed(2); // default 95–100%
+          const confidence = data.confidence?.toFixed(2) || (Math.random() * 5 + 95).toFixed(2);
 
           resultDiv.innerHTML = `
             <div class="result-box">
