@@ -104,8 +104,8 @@
   <div class="container">
     <h1>Predict Cauliflower Prices</h1>
 
-    <input type="text" id="date" placeholder="Enter Date (DD-MM-YYYY)" />
-    
+    <input type="text" id="date" placeholder="Enter Date (DD-MM-YYYY)" readonly onclick="showDatePicker()" />
+
     <select id="market">
       <option value="Binny Mill (F&V), Bangalore">Binny Mill (F&V), Bangalore</option>
       <option value="Doddaballa Pur">Doddaballa Pur</option>
@@ -125,6 +125,34 @@
 </footer>
 
   <script>
+    function formatDateToDDMMYYYY(date) {
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      return `${day}-${month}-${year}`;
+    }
+
+    function showDatePicker() {
+      const input = document.createElement("input");
+      input.type = "date";
+
+      // Set minimum date to tomorrow
+      const today = new Date();
+      today.setDate(today.getDate() + 1);
+      input.min = today.toISOString().split("T")[0];
+
+      input.style.position = "absolute";
+      input.style.opacity = 0;
+      input.onchange = () => {
+        const selectedDate = new Date(input.value);
+        document.getElementById("date").value = formatDateToDDMMYYYY(selectedDate);
+        document.body.removeChild(input);
+      };
+
+      document.body.appendChild(input);
+      input.click();
+    }
+
     function getPrediction() {
       const date = document.getElementById("date").value;
       const market = document.getElementById("market").value;
